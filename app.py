@@ -25,8 +25,13 @@ except Exception:
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 
-# Target download directory requested by user
-BASE_DIR = os.path.abspath(r'C:\Users\Hello\Downloads\wordpress\vid-downloader')
+# Target download directory: support both Local Windows & Cloud Containers (Railway/Docker)
+WINDOWS_DEFAULT = r'C:\Users\Hello\Downloads\wordpress\vid-downloader'
+if os.name == 'nt' and os.path.exists(WINDOWS_DEFAULT):
+    BASE_DIR = WINDOWS_DEFAULT
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DOWNLOAD_DIR = os.path.join(BASE_DIR, 'Downloaded_Videos')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
@@ -299,10 +304,23 @@ def open_root_folder():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/file/<task_id>', methods=['GET'])
+def download_file(task_id):
+    if task_id not in downloads or not downloads[task_id].get('filepath'):
+        return jsonify({'error': 'File not found'}), 404
+    filepath = downloads[task_id]['filepath']
+    if not os.path.exists(filepath):
+        return jsonify({'error': 'File no longer exists on server'}), 404
+    directory = os.path.dirname(filepath)
+    filename = os.path.basename(filepath)
+    return send_from_directory(directory, filename, as_attachment=True)
+
+
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     print("=" * 60)
     print("  [INFO] Universal Video Downloader Server Started!")
     print(f"  [PATH] Videos will be saved to: {DOWNLOAD_DIR}")
-    print("  [WEB]  Open your browser at: http://127.0.0.1:5000")
+    print(f"  [WEB]  Server listening on port {port}")
     print("=" * 60)
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)

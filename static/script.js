@@ -214,7 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     downloadBtn.disabled = false;
                     downloadBtn.style.opacity = '1';
                     
-                    // Bind open file button
+                    const downloadDeviceBtn = document.getElementById('download-device-btn');
+                    if (downloadDeviceBtn) {
+                        downloadDeviceBtn.onclick = () => {
+                            window.location.href = `/api/file/${taskId}`;
+                        };
+                    }
                     openFileBtn.onclick = () => openFolder(data.filepath, taskId);
                     fetchHistory();
                 } else if (data.status === 'error') {
@@ -260,6 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/history');
             if (!res.ok) return;
             const data = await res.json();
+            if (data.download_dir) {
+                document.querySelectorAll('#destination-path-display code, .folder-path-note code').forEach(el => el.textContent = data.download_dir);
+            }
             renderHistory(data.downloads);
         } catch (err) {
             console.error("Error fetching history:", err);
@@ -298,15 +306,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 </div>
-                <div class="h-actions">
-                    <button class="btn-open-folder-sm" title="Show in Folder">
-                        📂 Show in Folder
-                    </button>
+                <div class="h-actions" style="display: flex; gap: 0.5rem;">
+                    ${d.status === 'finished' ? `<button class="btn-open-folder-sm btn-download-cloud" title="Save to Device">⬇️ Save</button>` : ''}
+                    <button class="btn-open-folder-sm btn-show-folder" title="Show in Folder (Local)">📂 Folder</button>
                 </div>
             `;
 
-            const openBtn = item.querySelector('.btn-open-folder-sm');
-            openBtn.addEventListener('click', () => openFolder(d.filepath, d.id));
+            const dlBtn = item.querySelector('.btn-download-cloud');
+            if (dlBtn) dlBtn.addEventListener('click', () => window.location.href = `/api/file/${d.id}`);
+
+            const openBtn = item.querySelector('.btn-show-folder');
+            if (openBtn) openBtn.addEventListener('click', () => openFolder(d.filepath, d.id));
             historyList.appendChild(item);
         });
     }

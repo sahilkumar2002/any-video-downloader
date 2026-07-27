@@ -160,12 +160,22 @@
                         </svg>
                         <span>Downloaded Successfully to your System!</span>
                     </div>
-                    <button id="open-file-btn" class="btn-success-glow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                        </svg>
-                        <span>📂 Open Highlighted File in Folder</span>
-                    </button>
+                    <div class="action-buttons-group" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 0.5rem;">
+                        <button id="download-device-btn" class="btn-primary" style="min-width: 220px; font-size: 1rem; padding: 0.9rem 1.8rem;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>⬇️ Save to My Device</span>
+                        </button>
+                        <button id="open-file-btn" class="btn-success-glow" style="min-width: 220px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            <span>📂 Open Folder (Local Only)</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
