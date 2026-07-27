@@ -39,6 +39,26 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 # Structure: { task_id: { id, url, title, thumbnail, status, progress, speed, eta, total_size, filepath, error, format_id, time } }
 downloads = {}
 
+
+def get_base_ydl_opts():
+    """Returns base yt-dlp options configured to bypass YouTube cloud datacenter bot detection."""
+    opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'noplaylist': True,
+        'socket_timeout': 15,
+        # Bypass YouTube bot detection on cloud servers (Railway/Render) by spoofing mobile/TV clients
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'ios', 'web_creator', 'tvembedded'],
+            }
+        },
+    }
+    if FFMPEG_PATH:
+        opts['ffmpeg_location'] = FFMPEG_PATH
+    return opts
+
+
 @app.route('/')
 def serve_index():
     return send_from_directory('static', 'index.html')
@@ -50,15 +70,8 @@ def get_video_info():
     if not url:
         return jsonify({'error': 'Please provide a valid video URL.'}), 400
 
-    ydl_opts = {
-        'quiet': True,
-        'no_warnings': True,
-        'extract_flat': False,
-        'noplaylist': True,
-        'socket_timeout': 15,
-    }
-    if FFMPEG_PATH:
-        ydl_opts['ffmpeg_location'] = FFMPEG_PATH
+    ydl_opts = get_base_ydl_opts()
+    ydl_opts['extract_flat'] = False
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -160,16 +173,9 @@ def download_worker(task_id, url, format_id, title):
         # We inject __task_id into ydl_opts or hook so hook can find it
         out_template = os.path.join(DOWNLOAD_DIR, '%(title).100s [%(id)s].%(ext)s')
         
-        ydl_opts = {
-            'outtmpl': out_template,
-            'quiet': True,
-            'no_warnings': True,
-            'noplaylist': True,
-            'progress_hooks': [lambda d: progress_hook(dict(d, __task_id=task_id))],
-        }
-        
-        if FFMPEG_PATH:
-            ydl_opts['ffmpeg_location'] = FFMPEG_PATH
+        ydl_opts = get_base_ydl_opts()
+        ydl_opts['outtmpl'] = out_template
+        ydl_opts['progress_hooks'] = [lambda d: progress_hook(dict(d, __task_id=task_id))]
 
         if format_id != 'mp3':
             ydl_opts['merge_output_format'] = 'mp4'
