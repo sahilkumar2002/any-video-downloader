@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.env
+Downloaded_Videos/
+*.mp4
+*.webm
+*.mkv
+*.mp3
+*.git
+.gitignore
+README.md
+Start_Downloader.bat
