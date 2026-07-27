@@ -1,0 +1,34 @@
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+
+# Downloaded videos directory (do not upload downloaded media to GitHub!)
+Downloaded_Videos/
+*.mp4
+*.webm
+*.mkv
+*.mp3
+*.m4a
+*.part
+*.ytdl
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

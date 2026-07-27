@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidVelocity — Universal 4K & MP3 Video Downloader</title>
+    <meta name="description" content="A state-of-the-art, high-speed universal video downloader for YouTube, TikTok, Instagram, Twitter/X, Vimeo, and more. Save HD videos or MP3 audio directly to your system folder.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <header class="app-header">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <h1 id="app-title">VidVelocity <span class="badge">PRO</span></h1>
+                <p class="subtitle">Universal Video & Audio Downloader Engine</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="open-root-btn" class="btn-secondary" title="Open Downloads Folder in Windows Explorer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>Open Downloads Folder</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Hero Search Box -->
+        <section class="search-section glass-card" aria-labelledby="app-title">
+            <div class="search-header">
+                <h2>Paste Any Video Link Below</h2>
+                <p class="destination-path" id="destination-path-display">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Saving directly to: <code>C:\Users\Hello\Downloads\wordpress\vid-downloader\Downloaded_Videos</code>
+                </p>
+            </div>
+
+            <div class="input-wrapper">
+                <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </div>
+                <input type="url" id="url-input" placeholder="https://www.youtube.com/watch?v=... or TikTok, Instagram, Twitter/X link" autocomplete="off" spellcheck="false">
+                <button id="paste-btn" class="btn-icon" title="Paste from clipboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    </svg>
+                    <span>Paste</span>
+                </button>
+                <button id="fetch-btn" class="btn-primary">
+                    <span class="btn-text">Fetch Video</span>
+                    <div class="spinner hidden" id="fetch-spinner"></div>
+                </button>
+            </div>
+
+            <div class="supported-platforms">
+                <span class="platform-tag"><i class="dot red"></i> YouTube (4K/1080p/MP3)</span>
+                <span class="platform-tag"><i class="dot cyan"></i> TikTok (No Watermark)</span>
+                <span class="platform-tag"><i class="dot pink"></i> Instagram Reels & Stories</span>
+                <span class="platform-tag"><i class="dot blue"></i> Twitter / X</span>
+                <span class="platform-tag"><i class="dot purple"></i> Vimeo & Facebook</span>
+                <span class="platform-tag"><i class="dot green"></i> + 1,000s more websites</span>
+            </div>
+
+            <div id="error-message" class="error-banner hidden" role="alert"></div>
+        </section>
+
+        <!-- Video Preview & Format Selection (Hidden initially) -->
+        <section id="preview-section" class="preview-section glass-card hidden">
+            <div class="preview-grid">
+                <div class="thumbnail-wrapper">
+                    <img id="video-thumb" src="" alt="Video Thumbnail" loading="lazy">
+                    <span id="video-duration" class="duration-badge">00:00</span>
+                    <span id="video-platform" class="platform-badge">YouTube</span>
+                </div>
+
+                <div class="video-meta">
+                    <h3 id="video-title">Video Title Goes Here</h3>
+                    <p id="video-uploader" class="uploader-name">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>Channel Name</span>
+                    </p>
+
+                    <div class="format-selection">
+                        <label for="format-options">Select Download Quality & Format:</label>
+                        <div id="format-options" class="format-grid">
+                            <!-- Dynamic format buttons generated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button id="download-btn" class="btn-gradient-glow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>Start Download Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Download Progress Bar (Hidden until download starts) -->
+            <div id="progress-container" class="progress-container hidden">
+                <div class="progress-header">
+                    <span id="progress-status-text" class="status-label">Downloading video stream...</span>
+                    <span id="progress-percentage" class="percentage-label">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;">
+                        <div class="progress-glow"></div>
+                    </div>
+                </div>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Speed:</span>
+                        <span id="stat-speed" class="stat-val">0.0 MB/s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Estimated Time:</span>
+                        <span id="stat-eta" class="stat-val">--:--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Size:</span>
+                        <span id="stat-size" class="stat-val">Calculating...</span>
+                    </div>
+                </div>
+
+                <!-- Completed Action (Hidden until 100%) -->
+                <div id="completed-actions" class="completed-actions hidden">
+                    <div class="success-message">
+                        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span>Downloaded Successfully to your System!</span>
+                    </div>
+                    <button id="open-file-btn" class="btn-success-glow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>📂 Open Highlighted File in Folder</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download History Section -->
+        <section id="history-section" class="history-section glass-card">
+            <div class="history-header">
+                <div class="title-with-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <h2>Session Download History</h2>
+                </div>
+                <button id="refresh-history-btn" class="btn-ghost" title="Refresh History">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="history-list" class="history-list">
+                <div class="empty-history">
+                    <p>No downloads yet in this session. Paste a video link above to get started!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>Built with <span class="heart">♥</span> for Windows • Powered by universal <strong>yt-dlp + ffmpeg</strong> engine</p>
+        <p class="folder-path-note">All files are securely saved in: <code>C:\Users\Hello\Downloads\wordpress\vid-downloader\Downloaded_Videos</code></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
